@@ -20,6 +20,22 @@ const addUser = async (req, res) => {
     }
 };
 
+const getUsers = async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM users");
+
+        res.status(200).json({
+            message: "Users fetched successfully",
+            users: result.rows
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Something went wrong" });
+    }
+};
+
 module.exports = {
-    addUser
+    addUser,
+    getUsers
 };
