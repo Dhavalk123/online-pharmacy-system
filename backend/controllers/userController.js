@@ -5,7 +5,7 @@ const addUser = async (req, res) => {
         const { name, email, password, role } = req.body;
 
         const result = await pool.query(
-            "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *",
+            "INSERT INTO users (name, email, password, role) VALUES ($1,$2,$3,$4) RETURNING *",
             [name, email, password, role]
         );
 
@@ -35,7 +35,35 @@ const getUsers = async (req, res) => {
     }
 };
 
+const getUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const result = await pool.query(
+            "SELECT * FROM users WHERE user_id = $1",
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            user: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: "Something went wrong"
+        });
+    }
+};
+
 module.exports = {
     addUser,
-    getUsers
+    getUsers,
+    getUserById
 };
