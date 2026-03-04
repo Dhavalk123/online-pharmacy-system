@@ -73,6 +73,32 @@ const createOrder = async (req, res) => {
     }
 };
 
+// NEW FUNCTION (Order History API)
+const getOrders = async (req, res) => {
+    try {
+
+        const user_id = req.user.user_id;
+
+        const orders = await pool.query(
+            "SELECT * FROM orders WHERE user_id = $1 ORDER BY created_at DESC",
+            [user_id]
+        );
+
+        res.json({
+            orders: orders.rows
+        });
+
+    } catch (error) {
+
+        console.error(error);
+        res.status(500).json({
+            error: "Something went wrong"
+        });
+
+    }
+};
+
 module.exports = {
-    createOrder
+    createOrder,
+    getOrders
 };

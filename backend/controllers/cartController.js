@@ -54,6 +54,39 @@ const getCart = async (req, res) => {
     }
 };
 
+
+// NEW FUNCTION
+const updateCartItem = async (req, res) => {
+    try {
+
+        const { cart_id } = req.params;
+        const { quantity } = req.body;
+
+        const result = await pool.query(
+            "UPDATE cart SET quantity = $1 WHERE cart_id = $2 RETURNING *",
+            [quantity, cart_id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                message: "Cart item not found"
+            });
+        }
+
+        res.json({
+            message: "Cart updated successfully",
+            cart: result.rows[0]
+        });
+
+    } catch (error) {
+
+        console.error(error);
+        res.status(500).json({ error: "Something went wrong" });
+
+    }
+};
+
+
 const removeFromCart = async (req, res) => {
     try {
 
@@ -86,5 +119,6 @@ const removeFromCart = async (req, res) => {
 module.exports = {
     addToCart,
     getCart,
+    updateCartItem,
     removeFromCart
 };
