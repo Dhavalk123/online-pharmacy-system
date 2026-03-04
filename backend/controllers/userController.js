@@ -62,8 +62,39 @@ const getUserById = async (req, res) => {
     }
 };
 
+const updateUser = async (req, res) => {
+    try {
+
+        const { id } = req.params;
+        const { name, email } = req.body;
+
+        const result = await pool.query(
+            "UPDATE users SET name = $1, email = $2 WHERE user_id = $3 RETURNING *",
+            [name, email, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            message: "User updated successfully",
+            user: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: "Something went wrong"
+        });
+    }
+};
+
 module.exports = {
     addUser,
     getUsers,
-    getUserById
+    getUserById,
+    updateUser
 };
