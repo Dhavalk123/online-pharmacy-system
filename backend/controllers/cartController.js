@@ -1,26 +1,25 @@
 const pool = require("../config/db");
 
 const addToCart = async (req, res) => {
-    try {
+  try {
 
-        const { user_id, product_id, quantity } = req.body;
+    const user_id = req.user.user_id;
+    const { product_id, quantity } = req.body;
 
-        const result = await pool.query(
-            "INSERT INTO cart (user_id, product_id, quantity) VALUES ($1,$2,$3) RETURNING *",
-            [user_id, product_id, quantity]
-        );
+    const result = await pool.query(
+      "INSERT INTO cart (user_id, product_id, quantity) VALUES ($1,$2,$3) RETURNING *",
+      [user_id, product_id, quantity]
+    );
 
-        res.status(201).json({
-            message: "Product added to cart",
-            cart: result.rows[0]
-        });
+    res.status(201).json({
+      message: "Product added to cart",
+      cart: result.rows[0]
+    });
 
-    } catch (error) {
-
-        console.error(error);
-        res.status(500).json({ error: "Something went wrong" });
-
-    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 };
 
 const getCart = async (req, res) => {
